@@ -10,21 +10,21 @@ User can manage multiple cross-chain yield in single user interface with fun.
 
 Crosschain functionally is built with messaging protocol [Multichain](https://multichain.xyz).
 
-## Integrated Contract
+## Deployed Contract
 
 Below contracts are integrationed
 
-### Polygon (USDC)
+## Tested Transaction
 
-https://polygonscan.com/address/0x2F4BBA9fC4F77F16829F84181eB7C8b50F639F95#code
+## Integration
 
-### BSC (USDC)
+### Moralis API
 
-https://bscscan.com/address/0x517493d1Fb90aB0a3cE3a5084065B706e33e0fEA
+Used for fetching wallet token balance multichain
 
-### Fantom (USDC)
+### Axeler
 
-https://ftmscan.com/address/0x4Fa9263B35DC20bfa2eDEE24ee26113b40C4D3bB
+Used for cross-chain messaging
 
 ## Development
 
