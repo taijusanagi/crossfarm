@@ -3,6 +3,7 @@ import { NextPage } from "next";
 
 import { DefaultLayout } from "@/components/layouts/Default";
 import { Modal } from "@/components/Modal";
+import { Unit } from "@/components/Unit";
 
 const HomePage: NextPage = () => {
   const modalDisclosure = useDisclosure();
@@ -15,6 +16,9 @@ const HomePage: NextPage = () => {
       <Modal header="modal" isOpen={modalDisclosure.isOpen} onClose={modalDisclosure.onClose}>
         Content
       </Modal>
+      <Unit header="Header" description="Description">
+        Dhildren
+      </Unit>
     </DefaultLayout>
   );
 };
