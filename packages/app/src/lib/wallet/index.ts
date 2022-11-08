@@ -9,7 +9,7 @@ export interface RainbowWeb3AuthConnectorProps {
 }
 
 const { connectors } = getDefaultWallets({
-  appName: "CrossFarmer",
+  appName: "crossfarm",
   chains,
 });
 

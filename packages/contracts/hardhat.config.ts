@@ -7,6 +7,8 @@ import * as dotenv from "dotenv";
 import fs from "fs";
 import { HardhatUserConfig } from "hardhat/config";
 
+import rpc from "./rpc.json";
+
 dotenv.config();
 
 const mnemonicFileName = "../../mnemonic.txt";
@@ -35,6 +37,18 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       chainId: 1337,
+      accounts: {
+        mnemonic,
+      },
+    },
+    ethereum: {
+      url: rpc.ethereum,
+      accounts: {
+        mnemonic,
+      },
+    },
+    polygon: {
+      url: rpc.polygon,
       accounts: {
         mnemonic,
       },

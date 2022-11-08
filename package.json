@@ -1,5 +1,5 @@
 {
-  "name": "crossfarmer",
+  "name": "crossfarm",
   "version": "0.0.1",
   "license": "MIT",
   "private": true,
@@ -11,16 +11,16 @@
   "scripts": {
     "prepare": "husky install",
     "lint": "run-p lint:*",
-    "lint:app": "yarn workspace @crossfarmer/app lint",
-    "lint:contracts": "yarn workspace @crossfarmer/contracts lint",
+    "lint:app": "yarn workspace @crossfarm/app lint",
+    "lint:contracts": "yarn workspace @crossfarm/contracts lint",
     "test": "run-p test:*",
-    "test:contracts": "yarn workspace @crossfarmer/contracts test",
+    "test:contracts": "yarn workspace @crossfarm/contracts test",
     "predev": "yarn build:contracts",
     "dev": "run-p dev:*",
-    "dev:app": "yarn workspace @crossfarmer/app dev",
+    "dev:app": "yarn workspace @crossfarm/app dev",
     "build": "run-p build:*",
-    "build:app": "yarn workspace @crossfarmer/app build",
-    "build:contracts": "yarn workspace @crossfarmer/contracts build"
+    "build:app": "yarn workspace @crossfarm/app build",
+    "build:contracts": "yarn workspace @crossfarm/contracts build"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",

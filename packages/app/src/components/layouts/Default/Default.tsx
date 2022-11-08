@@ -15,7 +15,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
           <Flex justify="space-between" alignItems={"center"} h="8">
             <Link href="/">
               <Text fontSize="md" fontWeight={"bold"}>
-                CrossFarmer 🌽
+                CrossFarm 🌽
               </Text>
             </Link>
             <HStack>
@@ -34,7 +34,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
               😘 Moralis x Google 2022 Hackathon
             </Link>
           </Text>
-          <Link href="https://github.com/taijusanagi/crossfarmer" target={"_blank"}>
+          <Link href="https://github.com/taijusanagi/crossfarm" target={"_blank"}>
             <Icon as={FaGithub} aria-label="github" color="gray.400" />
           </Link>
         </HStack>

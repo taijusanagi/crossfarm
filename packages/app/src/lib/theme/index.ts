@@ -4,7 +4,7 @@ import { lightTheme } from "@rainbow-me/rainbowkit";
 
 export const myChakraUITheme = extendTheme(
   {
-    colors: { ...theme.colors, brand: theme.colors.blue },
+    colors: { ...theme.colors, brand: theme.colors.green },
   },
   theme
 );
@@ -14,7 +14,7 @@ export const myRainbowKitTheme = {
   ...rainbowKitTheme,
   colors: {
     ...rainbowKitTheme.colors,
-    accentColor: theme.colors.blue[500],
+    accentColor: theme.colors.green[500],
   },
   fonts: {
     ...rainbowKitTheme.fonts,
