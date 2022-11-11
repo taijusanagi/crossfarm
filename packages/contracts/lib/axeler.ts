@@ -1,1 +1,1 @@
-export const AssetSymbol = "aUSDC";
+export const assetSymbol = "aUSDC";

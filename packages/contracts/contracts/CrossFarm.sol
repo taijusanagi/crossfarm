@@ -62,15 +62,16 @@ contract CrossFarm is AxelarExecutable {
     string calldata tokenSymbol,
     uint256 tokenAmount
   ) internal virtual override {
+    address tokenAddress = gateway.tokenAddresses(tokenSymbol);
     (ProcessType processType, bytes memory additinalData) = abi.decode(payload, (ProcessType, bytes));
     if (processType == ProcessType.Plant) {
       (address recipientAddress, address vaultAddress) = abi.decode(additinalData, (address, address));
+      IERC20(tokenAddress).approve(vaultAddress, tokenAmount);
       IBeefyVault(vaultAddress).deposit(tokenAmount);
-      IERC20(vaultAddress).transferFrom(address(this), recipientAddress, tokenAmount);
+      IERC20(vaultAddress).transfer(recipientAddress, tokenAmount);
     } else {
       address recipientAddress = abi.decode(additinalData, (address));
-      address tokenAddress = gateway.tokenAddresses(tokenSymbol);
-      IERC20(tokenAddress).transferFrom(address(this), recipientAddress, tokenAmount);
+      IERC20(tokenAddress).transfer(recipientAddress, tokenAmount);
     }
   }
 }

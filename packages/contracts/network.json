@@ -27,8 +27,8 @@
       "aUSDC": "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
     },
     "deployments": {
-      "crossFarm": "0x5760527bFa552569d971c8c900A2ef877317E9b5",
-      "vault": "0x61767b10ab885c4a64E724f72Ad2711c6473D2F5"
+      "crossFarm": "0xEEeB47597825661a2077c6280a705b90F8749078",
+      "vault": "0x23E8330bF482c894B2A257c8bB07D1d527ba5a8b"
     }
   },
   "4002": {
@@ -43,8 +43,8 @@
       "aUSDC": "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
     },
     "deployments": {
-      "crossFarm": "0x5E1417C303048C7FF12e678574e3b48b3B941Ad1",
-      "vault": "0x83d39B47d3a963613b46bC6DA3eC3BA235B4b95c"
+      "crossFarm": "0x5760527bFa552569d971c8c900A2ef877317E9b5",
+      "vault": "0x61767b10ab885c4a64E724f72Ad2711c6473D2F5"
     }
   },
   "80001": {
