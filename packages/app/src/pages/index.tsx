@@ -43,8 +43,14 @@ const HomePage: NextPage = () => {
   const addresses = useAddresses();
   const { width, height } = useWindowSize();
   const { isWagmiConnected } = useIsWagmiConnected();
-  const { isAccountTokenAmountLoading, isAccountTokenAmountEnough, accountTokenAmount, fetchAccountTokens } =
-    useAccountTokenAmount();
+  const {
+    isAccountTokenAmountLoading,
+    isAccountTokenAmountEnough,
+    isAccountStakedAmountEnough,
+    accountTokenAmount,
+    accountStakedAmount,
+    fetchAccountTokens,
+  } = useAccountTokenAmount();
   const apy = useAPY();
   const plantModalDisclosure = useDisclosure();
   const harvestModalDisclosure = useDisclosure();
@@ -59,7 +65,7 @@ const HomePage: NextPage = () => {
   const [inputPlantAmount, setInputPlantAmount] = useState("0.1");
   const [inputHarvestAmount, setInputHarvestAmount] = useState("0.1");
   const [selectedChainId, setSelectedChainId] = useState<ChainId>("97");
-  const [isStaked, setIsStaked] = useState(false);
+  const [isStaked, setIsStaked] = useState(true);
 
   const [txHash, setTxHash] = useState("");
 
@@ -141,10 +147,11 @@ const HomePage: NextPage = () => {
               fontWeight={"bold"}
               onClick={() => {
                 setHarvestModalStatus("selectAsset");
+                fetchAccountTokens();
                 harvestModalDisclosure.onOpen();
               }}
               colorScheme={"brand"}
-              disabled={!isStaked}
+              disabled={!isWagmiConnected}
             >
               Harvest
             </Button>
@@ -321,10 +328,11 @@ const HomePage: NextPage = () => {
             <Button
               isLoading={isAccountTokenAmountLoading}
               loadingText={"Loading"}
-              disabled={!isAccountTokenAmountEnough}
+              disabled={!isAccountStakedAmountEnough}
               onClick={() => setHarvestModalStatus("selectNetwork")}
+              fontWeight={"bold"}
             >
-              {asset} {!isAccountTokenAmountEnough && "( Not Enough )"}
+              {asset} {!isAccountStakedAmountEnough ? "( Not Enough )" : `( ${accountStakedAmount} )`}
             </Button>
           </Stack>
         )}

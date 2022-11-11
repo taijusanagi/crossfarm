@@ -4,6 +4,16 @@
 
 CrossFarm is an auto cross-chain yield aggregator with Axeler with a bit of gamification.
 
+## Pitch Deck
+
+https://docs.google.com/presentation/d/12TXKI9oDoNG4F57UUpacoMl2qi--gMnjNsK9GI1LHt0/edit?usp=sharing
+
+## Demo Video
+
+https://youtu.be/nxcAjN2dANA
+
+## Live Demo
+
 ## How it is made
 
 Cross-chain functionally is built with messaging protocol [Multichain](https://multichain.xyz).
