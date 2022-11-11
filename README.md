@@ -85,3 +85,7 @@ https://mumbai.polygonscan.com/tx/0xe6a463a95bbaa5caca178db596ef3226fc730e2ac57a
 yarn
 yarn dev
 ```
+
+### Faucet
+
+Need to get aUSDC from [Axelar Discord](https://discord.com/invite/aRZ3Ra6f7D)

@@ -8,6 +8,7 @@ import {
   HStack,
   Image,
   Input,
+  Link,
   Radio,
   RadioGroup,
   Stack,
@@ -59,7 +60,7 @@ const HomePage: NextPage = () => {
     "selectAsset" | "inputAmount" | "selectNetwork" | "preview" | "result"
   >("selectAsset");
   const [harvestModalStatus, setHarvestModalStatus] = useState<
-    "selectAsset" | "inputAmount" | "selectNetwork" | "preview"
+    "selectAsset" | "inputAmount" | "selectNetwork" | "preview" | "result"
   >("selectAsset");
   const [asset] = useState("aUSDC");
   const [inputPlantAmount, setInputPlantAmount] = useState("0.1");
@@ -130,7 +131,7 @@ const HomePage: NextPage = () => {
     }
     try {
       setIsTxSending(true);
-      const parsedInputAmount = ethers.utils.parseUnits(inputPlantAmount, 6);
+      const parsedInputAmount = ethers.utils.parseUnits(inputHarvestAmount, 6);
       console.log("plant with cross-chain bridge");
       const allowance = await contracts.vault.allowance(userAddress, contracts.crossFarm.address);
       console.log("allowance", allowance);
@@ -161,7 +162,7 @@ const HomePage: NextPage = () => {
       console.log("process tx sent", process.hash);
       await process.wait();
       setTxHash(process.hash);
-      setPlantModalStatus("result");
+      setHarvestModalStatus("result");
       confettiDisclosure.onOpen();
       console.log("process tx confirmed");
     } catch (e) {
@@ -231,6 +232,9 @@ const HomePage: NextPage = () => {
             >
               {asset} {!isAccountTokenAmountEnough ? "( Not Enough )" : `( ${accountTokenAmount} )`} {}
             </Button>
+            <Text fontSize="sm" color="gray.500">
+              * Please get testnet aUSDC from in <Link color="blue.500">Axelar Discord</Link> faucet channel
+            </Text>
           </Stack>
         )}
         {plantModalStatus === "inputAmount" && (
@@ -473,7 +477,7 @@ const HomePage: NextPage = () => {
                     <Text fontSize="md" fontWeight={"bold"}>
                       Source Chain
                     </Text>
-                    <Text fontSize="md">{networkJsonFile[chainId].name}</Text>
+                    <Text fontSize="md">{chainId && networkJsonFile[chainId].name}</Text>
                   </Stack>
                   <Stack spacing="1">
                     <Text fontSize="md" fontWeight={"bold"}>
