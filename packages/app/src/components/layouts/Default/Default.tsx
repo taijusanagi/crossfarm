@@ -14,7 +14,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         <Box as="nav" py="4">
           <Flex justify="space-between" alignItems={"center"} h="8">
             <Link href="/">
-              <Image src="/img/corn.png" alt="logo" h="8" />
+              <Image src="/img/corn.png" alt="logo" h="6" />
             </Link>
             <HStack>
               <ConnectButton accountStatus={"address"} showBalance={false} chainStatus={"name"} />

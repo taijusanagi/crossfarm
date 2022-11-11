@@ -1,12 +1,10 @@
 import {
-  Box,
   Button,
   Center,
   Flex,
   FormControl,
   FormLabel,
   HStack,
-  IconButton,
   Image,
   Input,
   Radio,
@@ -15,22 +13,28 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { ethers } from "ethers";
 import { NextPage } from "next";
 import { useState } from "react";
-import { AiOutlinePlus } from "react-icons/ai";
 
 import { DefaultLayout } from "@/components/layouts/Default";
 import { Modal } from "@/components/Modal";
 import { Unit } from "@/components/Unit";
 import { useAccountTokenAmount } from "@/hooks/useAccountTokenAmount";
+import { useAddresses } from "@/hooks/useAddresses";
 import { useAPY } from "@/hooks/useAPY";
 import { useChainId } from "@/hooks/useChainId";
-import { ChainId, isChainId } from "@/types/ChainId";
+import { useContracts } from "@/hooks/useContracts";
+import { useIsWagmiConnected } from "@/hooks/useIsWagmiConnected";
 
-import network from "../../../contracts/network.json";
+import networkJsonFile from "../../../contracts/network.json";
+import { ChainId, isChainId } from "../../../contracts/types/ChainId";
 
 const HomePage: NextPage = () => {
   const { chainId } = useChainId();
+  const contracts = useContracts();
+
+  const { isWagmiConnected } = useIsWagmiConnected();
   const { isAccountTokenAmountLoading, isAccountTokenAmountEnough, accountTokenAmount, fetchAccountTokenAmount } =
     useAccountTokenAmount();
   const apy = useAPY();
@@ -42,10 +46,10 @@ const HomePage: NextPage = () => {
   const [harvestModalStatus, setHarvestModalStatus] = useState<
     "selectAsset" | "inputAmount" | "selectNetwork" | "preview"
   >("selectAsset");
+  const [asset] = useState("aUSDC");
   const [inputPlantAmount, setInputPlantAmount] = useState("1");
   const [inputHarvestAmount, setInputHarvestAmount] = useState("1");
-
-  const [selectedChainId, setSelectedChainId] = useState<ChainId>("80001");
+  const [selectedChainId, setSelectedChainId] = useState<ChainId>("5");
   const [isStaked, setIsStaked] = useState(false);
 
   const setSelectedChainIdWithTypeCheck = (chainId: string) => {
@@ -55,22 +59,47 @@ const HomePage: NextPage = () => {
     setSelectedChainId(chainId);
   };
 
+  const plant = async () => {
+    if (!contracts || !addresses) {
+      return;
+    }
+    if (chainId === selectedChainId) {
+      // chech approve
+      await contracts.vault.deposit(inputPlantAmount);
+    } else {
+      // string memory destinationChain,
+      // string memory destinationAddress,
+      // string memory tokenSymbol,
+      // uint256 tokenAmount,
+      // address vaultAddress
+      const amount = ethers.utils.parseUnits(inputPlantAmount, 6);
+
+      await contracts.crossFarm.xPlant(
+        selectedChainId,
+        networkJsonFile[selectedChainId].deployments.crossFarm,
+        asset,
+        amount,
+        networkJsonFile[selectedChainId].deployments.vault
+      );
+    }
+  };
+
   return (
     <DefaultLayout>
-      <Stack spacing="4">
-        <Unit header="Farm Status" description="This is your staking status">
-          <Flex justify="right">
+      <Unit header="CrossFarm" description="Automated crosschain yield aggregator portal  ">
+        <Stack spacing="8">
+          <Flex justify="space-between">
             <Button
               onClick={() => {
                 setPlantModalStatus("selectAsset");
                 fetchAccountTokenAmount();
                 plantModalDisclosure.onOpen();
               }}
-              colorScheme={chainId === "5" ? "brand" : "gray"}
+              colorScheme={"brand"}
               size="sm"
-              disabled={chainId !== "5"}
+              disabled={!isWagmiConnected}
             >
-              {chainId !== "5" ? "Connect Georli" : "Plant"}
+              Plant
             </Button>
             <Modal header="Plant" isOpen={plantModalDisclosure.isOpen} onClose={plantModalDisclosure.onClose}>
               {plantModalStatus === "selectAsset" && (
@@ -132,10 +161,14 @@ const HomePage: NextPage = () => {
                 <Stack spacing="8">
                   <FormControl>
                     <RadioGroup onChange={setSelectedChainIdWithTypeCheck} value={selectedChainId}>
-                      <Stack>
-                        <Radio value="80001">Polygon Mumbai - {apy["80001"]}%</Radio>
-                        <Radio value="97">BNB Testnet - {apy["97"]}%</Radio>
-                        <Radio value="4002">Fantom Testnet - {apy["4002"]}%</Radio>
+                      <Stack spacing="4">
+                        {Object.entries(networkJsonFile).map(([chainId, value]) => {
+                          return (
+                            <Radio key={chainId} value={chainId}>
+                              {value.name} - {apy[chainId]}%
+                            </Radio>
+                          );
+                        })}
                       </Stack>
                     </RadioGroup>
                   </FormControl>
@@ -187,7 +220,7 @@ const HomePage: NextPage = () => {
                       <Text fontSize="sm" fontWeight={"medium"}>
                         Target Chain
                       </Text>
-                      <Text fontSize="sm">{network[selectedChainId].name}</Text>
+                      <Text fontSize="sm">{networkJsonFile[selectedChainId].name}</Text>
                     </Stack>
                     <Stack spacing="1">
                       <Text fontSize="sm" fontWeight={"medium"}>
@@ -223,23 +256,14 @@ const HomePage: NextPage = () => {
                 </Stack>
               )}
             </Modal>
-          </Flex>
-
-          <Center p="12" h="200" position="relative">
-            <Image src="/img/base.png" alt="base" h="200" position="absolute" top="0" />
-            {isStaked && <Image src="/img/corn.png" alt="corn" h="12" position="absolute" top="10" />}
-          </Center>
-        </Unit>
-        <Unit header="Farm Detail" description="This is your staking detail">
-          <Flex justify="right">
             <Button
               onClick={() => {
                 setHarvestModalStatus("selectAsset");
                 harvestModalDisclosure.onOpen();
               }}
               size="sm"
-              colorScheme={isStaked ? "brand" : "gray"}
-              disabled={!isStaked}
+              colorScheme={"brand"}
+              disabled={!isWagmiConnected}
             >
               Harvest
             </Button>
@@ -256,7 +280,7 @@ const HomePage: NextPage = () => {
                     disabled={!isAccountTokenAmountEnough}
                     onClick={() => setHarvestModalStatus("selectNetwork")}
                   >
-                    aUSDC {!isAccountTokenAmountEnough && "( Not Enough )"}
+                    {asset} {!isAccountTokenAmountEnough && "( Not Enough )"}
                   </Button>
                 </Stack>
               )}
@@ -264,11 +288,14 @@ const HomePage: NextPage = () => {
                 <Stack spacing="8">
                   <FormControl>
                     <RadioGroup onChange={setSelectedChainIdWithTypeCheck} value={selectedChainId}>
-                      <Stack>
-                        <Radio value="5">Ethereum Georli</Radio>
-                        <Radio value="80001">Polygon Mumbai</Radio>
-                        <Radio value="97">BNB Testnet</Radio>
-                        <Radio value="4002">Fantom Testnet</Radio>
+                      <Stack spacing="4">
+                        {Object.entries(networkJsonFile).map(([chainId, value]) => {
+                          return (
+                            <Radio key={chainId} value={chainId}>
+                              {value.name}
+                            </Radio>
+                          );
+                        })}
                       </Stack>
                     </RadioGroup>
                   </FormControl>
@@ -278,7 +305,7 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
+                      disabled={!inputHarvestAmount}
                       onClick={() => setHarvestModalStatus("selectAsset")}
                     >
                       Back
@@ -288,7 +315,7 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
+                      disabled={!inputHarvestAmount}
                       onClick={() => setPlantModalStatus("preview")}
                       colorScheme="brand"
                     >
@@ -304,7 +331,9 @@ const HomePage: NextPage = () => {
                       <Text fontSize="sm" fontWeight={"medium"}>
                         Amount
                       </Text>
-                      <Text fontSize="sm">{inputAmount} aUSDC</Text>
+                      <Text fontSize="sm">
+                        {inputHarvestAmount} {asset}
+                      </Text>
                     </Stack>
                     <Stack spacing="1">
                       <Text fontSize="sm" fontWeight={"medium"}>
@@ -316,13 +345,13 @@ const HomePage: NextPage = () => {
                       <Text fontSize="sm" fontWeight={"medium"}>
                         Source Chain
                       </Text>
-                      <Text fontSize="sm">{network[selectedChainId].name}</Text>
+                      <Text fontSize="sm">{networkJsonFile[selectedChainId].name}</Text>
                     </Stack>
                     <Stack spacing="1">
                       <Text fontSize="sm" fontWeight={"medium"}>
                         Target Chain
                       </Text>
-                      <Text fontSize="sm">{network[selectedChainId].name}</Text>
+                      <Text fontSize="sm">{networkJsonFile[selectedChainId].name}</Text>
                     </Stack>
                   </Stack>
                   <HStack>
@@ -331,7 +360,7 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
+                      disabled={!inputHarvestAmount}
                       onClick={() => setPlantModalStatus("selectNetwork")}
                     >
                       Back
@@ -341,7 +370,7 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
+                      disabled={!inputHarvestAmount}
                       onClick={() => {
                         setIsStaked(true);
                         plantModalDisclosure.onClose();
@@ -355,8 +384,15 @@ const HomePage: NextPage = () => {
               )}
             </Modal>
           </Flex>
-        </Unit>
-      </Stack>
+          <Center p="12" h="200" position="relative">
+            <Image src="/img/base.png" alt="base" h="200" position="absolute" top="0" />
+            {isStaked && <Image src="/img/corn.png" alt="corn" h="12" position="absolute" top="10" />}
+          </Center>
+          <Unit header="Farm Detail" bgColor={"green.500"} color={"white"}>
+            <Flex justify="right"></Flex>
+          </Unit>
+        </Stack>
+      </Unit>
     </DefaultLayout>
   );
 };

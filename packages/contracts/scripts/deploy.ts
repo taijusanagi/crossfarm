@@ -3,32 +3,26 @@ import fs from "fs";
 import { ethers, network } from "hardhat";
 import path from "path";
 
-import axelar from "../axelar.json";
-import { CrossFarm__factory, MockVaultFactory__factory } from "../typechain-types";
-import { DeterministicDeployer } from "./helpers/DeterministicDeployer";
+import networkJsonFile from "../network.json";
+import { isChainId } from "../types/ChainId";
 
 async function main() {
-  if (
-    network.name !== "ethereum" &&
-    network.name !== "polygon" &&
-    network.name !== "bnb" &&
-    network.name !== "fantom"
-  ) {
-    throw new Error("network invalid");
+  const chainId = String(network.config.chainId);
+  if (!isChainId(chainId)) {
+    throw new Error("chainId invalid");
   }
-
-  const factoryAddress = await DeterministicDeployer.deploy(MockVaultFactory__factory.bytecode);
-  const argument = ethers.utils.defaultAbiCoder.encode(
-    ["address", "address", "address"],
-    [axelar.testnet[network.name].gateway, axelar.testnet[network.name].gasService, factoryAddress]
+  const CrossFarm = await ethers.getContractFactory("CrossFarm");
+  const { address: crossFarmAddress } = await CrossFarm.deploy(
+    networkJsonFile[chainId].axelar.gateway,
+    networkJsonFile[chainId].axelar.gasService
   );
-  const crossFarmCreationCode = ethers.utils.solidityPack(["bytes", "bytes"], [CrossFarm__factory.bytecode, argument]);
-  const crossFarmAddress = await DeterministicDeployer.deploy(crossFarmCreationCode);
-
-  const result = {
-    crossFarm: crossFarmAddress,
-  };
-  fs.writeFileSync(path.join(__dirname, `../deployments.json`), JSON.stringify(result));
+  console.log("crossFarmAddress", crossFarmAddress);
+  networkJsonFile[chainId].deployments.crossFarm = crossFarmAddress;
+  const Vault = await ethers.getContractFactory("MockVault");
+  const { address: vaultAddress } = await Vault.deploy(networkJsonFile[chainId].axelar.aUSDC);
+  console.log("vaultAddress", vaultAddress);
+  networkJsonFile[chainId].deployments.vault = vaultAddress;
+  fs.writeFileSync(path.join(__dirname, `../network.json`), JSON.stringify(networkJsonFile));
 }
 
 main().catch((error) => {

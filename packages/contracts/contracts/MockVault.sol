@@ -3,10 +3,9 @@ pragma solidity ^0.8.0;
 
 import {IERC20, ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-// This is mock of beefy finance vault contract
-// Only deposit/withdraw without yield is implemented
+import {IBeefyVault} from "./interfaces/IBeefyVault.sol";
 
-contract MockVault is ERC20 {
+contract MockVault is IBeefyVault, ERC20 {
   address private _token;
 
   constructor(address token) ERC20("MockVault", "MV") {

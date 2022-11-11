@@ -7,7 +7,7 @@ import * as dotenv from "dotenv";
 import fs from "fs";
 import { HardhatUserConfig } from "hardhat/config";
 
-import rpc from "./rpc.json";
+import networkJsonFile from "./network.json";
 
 dotenv.config();
 
@@ -42,13 +42,29 @@ const config: HardhatUserConfig = {
       },
     },
     ethereum: {
-      url: rpc.ethereum,
+      chainId: 5,
+      url: networkJsonFile["5"].rpc,
+      accounts: {
+        mnemonic,
+      },
+    },
+    bnb: {
+      chainId: 97,
+      url: networkJsonFile["97"].rpc,
+      accounts: {
+        mnemonic,
+      },
+    },
+    fantom: {
+      chainId: 4002,
+      url: networkJsonFile["4002"].rpc,
       accounts: {
         mnemonic,
       },
     },
     polygon: {
-      url: rpc.polygon,
+      chainId: 80001,
+      url: networkJsonFile["80001"].rpc,
       accounts: {
         mnemonic,
       },

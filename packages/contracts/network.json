@@ -2,37 +2,65 @@
   "5": {
     "key": "ethereum-georli",
     "name": "Ethereum Georli",
+    "currency": "ETH",
+    "rpc": "https://rpc.ankr.com/eth_goerli",
+    "explorer": { "name": "Etherscan", "url": "https://goerli.etherscan.io/" },
     "axelar": {
       "gateway": "0xe432150cce91c13a887f7D836923d5597adD8E31",
       "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
       "aUSDC": "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
+    },
+    "deployments": {
+      "crossFarm": "0x580b8f2B5635e96063909dC12BBF7d750A3feC09",
+      "vault": "0x617a33601251Eb7Be99f7B69DA6edf6D9ACB3689"
     }
   },
   "97": {
     "key": "bnb-testnet",
     "name": "BNB Testnet",
+    "currency": "BNB",
+    "rpc": "https://bsctestapi.terminet.io/rpc",
+    "explorer": { "name": "BscScan", "url": "https://testnet.bscscan.com/" },
     "axelar": {
       "gateway": "0x4D147dCb984e6affEEC47e44293DA442580A3Ec0",
       "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
       "aUSDC": "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
+    },
+    "deployments": {
+      "crossFarm": "0x5E1417C303048C7FF12e678574e3b48b3B941Ad1",
+      "vault": "0x83d39B47d3a963613b46bC6DA3eC3BA235B4b95c"
     }
   },
   "4002": {
     "key": "fantom-tesnet",
     "name": "Fantom Testnet",
+    "currency": "FTM",
+    "rpc": "https://rpc.ankr.com/fantom_testnet",
+    "explorer": { "name": "FTMScan", "url": "https://testnet.ftmscan.com/" },
     "axelar": {
       "gateway": "0x97837985Ec0494E7b9C71f5D3f9250188477ae14",
       "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
       "aUSDC": "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
+    },
+    "deployments": {
+      "crossFarm": "0x5E1417C303048C7FF12e678574e3b48b3B941Ad1",
+      "vault": "0x83d39B47d3a963613b46bC6DA3eC3BA235B4b95c"
     }
   },
   "80001": {
     "key": "polygon-mumabi",
     "name": "Polygon Mumbai",
+    "currency": "MATIC",
+    "rpc": "https://rpc.ankr.com/polygon_mumbai",
+    "explorer": { "name": "Polygonscan", "url": "https://mumbai.polygonscan.com/" },
     "axelar": {
       "gateway": "0xBF62ef1486468a6bd26Dd669C06db43dEd5B849B",
       "gasService": "0xbE406F0189A0B4cf3A05C286473D23791Dd44Cc6",
       "aUSDC": "0x2c852e740B62308c46DD29B982FBb650D063Bd07"
+    },
+    "deployments": {
+      "crossFarm": "0xCb929DB86E0838815cAC99a477a894dc346Fe6e1",
+      "vault": "0x804Bfaa8d96ebf57E223Ca924582be0C6B0bBa29"
     }
   }
 }

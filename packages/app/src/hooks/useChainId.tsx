@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNetwork } from "wagmi";
 
-import { isChainId } from "@/types/ChainId";
+import { isChainId } from "../../../contracts/types/ChainId";
 
 export const useChainId = () => {
   const { chain } = useNetwork();
