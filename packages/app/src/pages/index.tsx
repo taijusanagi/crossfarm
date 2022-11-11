@@ -39,6 +39,7 @@ const HomePage: NextPage = () => {
   const apy = useAPY();
   const plantModalDisclosure = useDisclosure();
   const harvestModalDisclosure = useDisclosure();
+
   const [plantModalStatus, setPlantModalStatus] = useState<"selectAsset" | "inputAmount" | "selectNetwork" | "preview">(
     "selectAsset"
   );
@@ -85,7 +86,7 @@ const HomePage: NextPage = () => {
 
   return (
     <DefaultLayout>
-      <Unit header="CrossFarm" description="Automated crosschain yield aggregator portal  ">
+      <Unit header="CrossFarm" description="Automated yield aggregator with Axeler">
         <Stack spacing="8">
           <Flex justify="space-between">
             <Button
@@ -133,7 +134,7 @@ const HomePage: NextPage = () => {
               disabled={!isAccountTokenAmountEnough}
               onClick={() => setPlantModalStatus("inputAmount")}
             >
-              aUSDC {!isAccountTokenAmountEnough && "( Not Enough )"}
+              {asset} {!isAccountTokenAmountEnough && "( Not Enough )"}
             </Button>
           </Stack>
         )}
