@@ -1,6 +1,6 @@
 # CrossFarm
 
-![key](./packages/app/public/img/top.png)
+![key](./packages/app/public/img/key.png)
 
 ## Description
 
