@@ -12,18 +12,36 @@ import {MockVault} from "./MockVault.sol";
 contract CrossFarm is AxelarExecutable {
   IAxelarGasService public immutable gasReceiver;
 
+  enum ProcessType {
+    Plant,
+    Harvest
+  }
+
   constructor(address gateway_, address gasReceiver_) AxelarExecutable(gateway_) {
     gasReceiver = IAxelarGasService(gasReceiver_);
   }
 
-  function xPlant(
+  function process(
+    ProcessType processType,
     string memory destinationChain,
     string memory destinationAddress,
     string memory tokenSymbol,
     uint256 tokenAmount,
     address vaultAddress
   ) external payable {
-    bytes memory payload = abi.encode(msg.sender, vaultAddress);
+    bytes memory additinalData;
+    if (processType == ProcessType.Plant) {
+      additinalData = abi.encode(msg.sender, vaultAddress);
+      address tokenAddress = gateway.tokenAddresses(tokenSymbol);
+      IERC20(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+    } else {
+      additinalData = abi.encode(msg.sender);
+      IERC20(vaultAddress).transferFrom(msg.sender, address(this), tokenAmount);
+      MockVault(vaultAddress).withdraw(tokenAmount);
+    }
+
+    bytes memory payload = abi.encode(processType, additinalData);
+
     if (msg.value > 0) {
       gasReceiver.payNativeGasForContractCall{value: msg.value}(
         address(this),
@@ -33,6 +51,7 @@ contract CrossFarm is AxelarExecutable {
         msg.sender
       );
     }
+
     gateway.callContractWithToken(destinationChain, destinationAddress, payload, tokenSymbol, tokenAmount);
   }
 
@@ -42,12 +61,17 @@ contract CrossFarm is AxelarExecutable {
     string calldata sourceAddress,
     bytes calldata payload,
     string calldata tokenSymbol,
-    uint256 amount
+    uint256 tokenAmount
   ) internal virtual override {
-    (address recipient, address vaultAddress) = abi.decode(payload, (address, address));
-    address tokenAddress = gateway.tokenAddresses(tokenSymbol);
-    IERC20(tokenAddress).approve(vaultAddress, amount);
-    MockVault(vaultAddress).deposit(amount);
-    IERC20(vaultAddress).transferFrom(address(this), recipient, amount);
+    (ProcessType processType, bytes memory additinalData) = abi.decode(payload, (ProcessType, bytes));
+    if (processType == ProcessType.Plant) {
+      (address recipientAddress, address vaultAddress) = abi.decode(additinalData, (address, address));
+      MockVault(vaultAddress).deposit(tokenAmount);
+      IERC20(vaultAddress).transferFrom(address(this), recipientAddress, tokenAmount);
+    } else {
+      address recipientAddress = abi.decode(additinalData, (address));
+      address tokenAddress = gateway.tokenAddresses(tokenSymbol);
+      IERC20(tokenAddress).transferFrom(address(this), recipientAddress, tokenAmount);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Flex,
@@ -86,8 +87,8 @@ const HomePage: NextPage = () => {
 
   return (
     <DefaultLayout>
-      <Unit header="CrossFarm" description="Automated yield aggregator with Axeler">
-        <Stack spacing="8">
+      <Unit header="CrossFarm" description="Auto crosschain yield aggregator with Axeler">
+        <Stack>
           <Flex justify="space-between">
             <Button
               fontWeight={"bold"}
@@ -113,15 +114,12 @@ const HomePage: NextPage = () => {
               Harvest
             </Button>
           </Flex>
-          <Center p="12" h="200" position="relative">
-            <Image src="/img/base.png" alt="base" h="200" position="absolute" top="0" />
-            {isStaked && <Image src="/img/corn.png" alt="corn" h="12" position="absolute" top="10" />}
-          </Center>
-          {isStaked && (
-            <Unit header="Farm Detail" bgColor={"green.500"} color={"white"}>
-              <Flex justify="right"></Flex>
-            </Unit>
-          )}
+          <Box py="12">
+            <Center h="200" position="relative">
+              <Image src="/img/base.png" alt="base" h="200" position="absolute" top="0" />
+              {isStaked && <Image src="/img/corn.png" alt="corn" h="12" position="absolute" top="10" />}
+            </Center>
+          </Box>
         </Stack>
       </Unit>
       <Modal header="Plant" isOpen={plantModalDisclosure.isOpen} onClose={plantModalDisclosure.onClose}>

@@ -30,15 +30,18 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
       {mode === "lp" && (
         <Box position="relative">
           <Image src="/img/top.png" alt="top" h={"100vh"} w={"100vw"} objectFit="fill" position="absolute" />
-          <Box h={"100vh"} w={"100vw"} position="absolute" bgColor={"rgba(0, 0, 0, 0.75)"} />
+          <Box h={"100vh"} w={"100vw"} position="absolute" bgColor={"rgba(0, 0, 0, 0.8)"} />
           <Center h={"100vh"} w={"100vw"} position="absolute" p="4">
             <Stack spacing="12">
               <Stack spacing="0">
-                <Text color="green.500" fontSize="7xl" fontWeight={"bold"} textAlign="center">
-                  CrossFarm
-                </Text>
+                <HStack justify={"center"}>
+                  <Text color="green.500" fontSize="7xl" fontWeight={"bold"} textAlign="center">
+                    CrossFarm
+                  </Text>
+                  <Image src="/img/corn.png" alt="logo" h="12" />
+                </HStack>
                 <Text color="white" fontSize="xl" textAlign="center">
-                  Automated yield aggregator with Axeler
+                  Auto crosschain yield aggregator with Axeler
                 </Text>
               </Stack>
               <Button onClick={() => setMode("app")} colorScheme={"green"} fontWeight="bold">
