@@ -2,9 +2,14 @@ import { theme } from "@chakra-ui/pro-theme";
 import { extendTheme } from "@chakra-ui/react";
 import { lightTheme } from "@rainbow-me/rainbowkit";
 
+const font = "VT323";
+
 export const myChakraUITheme = extendTheme(
   {
     colors: { ...theme.colors, brand: theme.colors.green },
+    fonts: {
+      body: font,
+    },
   },
   theme
 );
@@ -18,7 +23,7 @@ export const myRainbowKitTheme = {
   },
   fonts: {
     ...rainbowKitTheme.fonts,
-    body: theme.fonts.body,
+    body: font,
   },
   shadows: {
     ...rainbowKitTheme.shadows,
