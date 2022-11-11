@@ -1,10 +1,13 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   FormControl,
   FormLabel,
   HStack,
+  IconButton,
+  Image,
   Input,
   Radio,
   RadioGroup,
@@ -30,13 +33,20 @@ const HomePage: NextPage = () => {
   const { chainId } = useChainId();
   const { isAccountTokenAmountLoading, isAccountTokenAmountEnough, accountTokenAmount, fetchAccountTokenAmount } =
     useAccountTokenAmount();
+  const apy = useAPY();
   const plantModalDisclosure = useDisclosure();
-  const [plantModalStatus, setPlantModalStatus] = useState<"selectAsset" | "inputAmount" | "selectFarm" | "preview">(
+  const harvestModalDisclosure = useDisclosure();
+  const [plantModalStatus, setPlantModalStatus] = useState<"selectAsset" | "inputAmount" | "selectNetwork" | "preview">(
     "selectAsset"
   );
-  const [inputAmount, setInputAmount] = useState("1");
+  const [harvestModalStatus, setHarvestModalStatus] = useState<
+    "selectAsset" | "inputAmount" | "selectNetwork" | "preview"
+  >("selectAsset");
+  const [inputPlantAmount, setInputPlantAmount] = useState("1");
+  const [inputHarvestAmount, setInputHarvestAmount] = useState("1");
+
   const [selectedChainId, setSelectedChainId] = useState<ChainId>("80001");
-  const apy = useAPY();
+  const [isStaked, setIsStaked] = useState(false);
 
   const setSelectedChainIdWithTypeCheck = (chainId: string) => {
     if (!isChainId(chainId)) {
@@ -45,27 +55,24 @@ const HomePage: NextPage = () => {
     setSelectedChainId(chainId);
   };
 
-  const onClickPlant = () => {
-    setPlantModalStatus("selectAsset");
-    fetchAccountTokenAmount();
-    plantModalDisclosure.onOpen();
-  };
-
   return (
     <DefaultLayout>
       <Stack spacing="4">
-        <Flex justify="right">
-          <Box>
+        <Unit header="Farm Status" description="This is your staking status">
+          <Flex justify="right">
             <Button
-              onClick={onClickPlant}
-              colorScheme="brand"
+              onClick={() => {
+                setPlantModalStatus("selectAsset");
+                fetchAccountTokenAmount();
+                plantModalDisclosure.onOpen();
+              }}
+              colorScheme={chainId === "5" ? "brand" : "gray"}
               size="sm"
-              rightIcon={chainId === "5" ? <AiOutlinePlus /> : undefined}
               disabled={chainId !== "5"}
             >
-              {chainId !== "5" ? "Connect Georli" : "plant"}
+              {chainId !== "5" ? "Connect Georli" : "Plant"}
             </Button>
-            <Modal header="Plant Asset" isOpen={plantModalDisclosure.isOpen} onClose={plantModalDisclosure.onClose}>
+            <Modal header="Plant" isOpen={plantModalDisclosure.isOpen} onClose={plantModalDisclosure.onClose}>
               {plantModalStatus === "selectAsset" && (
                 <Stack spacing="4">
                   <Button
@@ -92,8 +99,8 @@ const HomePage: NextPage = () => {
                     <Input
                       type="number"
                       placeholder={"aUSDC"}
-                      value={inputAmount}
-                      onChange={(e) => setInputAmount(e.target.value)}
+                      value={inputPlantAmount}
+                      onChange={(e) => setInputPlantAmount(e.target.value)}
                     />
                   </FormControl>
                   <HStack>
@@ -102,7 +109,7 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
+                      disabled={!inputPlantAmount}
                       onClick={() => setPlantModalStatus("selectAsset")}
                     >
                       Back
@@ -112,8 +119,8 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
-                      onClick={() => setPlantModalStatus("selectFarm")}
+                      disabled={!inputPlantAmount}
+                      onClick={() => setPlantModalStatus("selectNetwork")}
                       colorScheme="brand"
                     >
                       Next
@@ -121,7 +128,7 @@ const HomePage: NextPage = () => {
                   </HStack>
                 </Stack>
               )}
-              {plantModalStatus === "selectFarm" && (
+              {plantModalStatus === "selectNetwork" && (
                 <Stack spacing="8">
                   <FormControl>
                     <RadioGroup onChange={setSelectedChainIdWithTypeCheck} value={selectedChainId}>
@@ -138,7 +145,6 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
                       onClick={() => setPlantModalStatus("inputAmount")}
                     >
                       Back
@@ -148,7 +154,6 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
-                      disabled={!inputAmount}
                       onClick={() => setPlantModalStatus("preview")}
                       colorScheme="brand"
                     >
@@ -164,7 +169,7 @@ const HomePage: NextPage = () => {
                       <Text fontSize="sm" fontWeight={"medium"}>
                         Amount
                       </Text>
-                      <Text fontSize="sm">{inputAmount} aUSDC</Text>
+                      <Text fontSize="sm">{inputPlantAmount} aUSDC</Text>
                     </Stack>
                     <Stack spacing="1">
                       <Text fontSize="sm" fontWeight={"medium"}>
@@ -197,8 +202,84 @@ const HomePage: NextPage = () => {
                       boxShadow={"md"}
                       borderRadius="2xl"
                       fontSize="sm"
+                      onClick={() => setPlantModalStatus("selectNetwork")}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      w="full"
+                      boxShadow={"md"}
+                      borderRadius="2xl"
+                      fontSize="sm"
+                      onClick={() => {
+                        setIsStaked(true);
+                        plantModalDisclosure.onClose();
+                      }}
+                      colorScheme="brand"
+                    >
+                      Confirm
+                    </Button>
+                  </HStack>
+                </Stack>
+              )}
+            </Modal>
+          </Flex>
+
+          <Center p="12" h="200" position="relative">
+            <Image src="/img/base.png" alt="base" h="200" position="absolute" top="0" />
+            {isStaked && <Image src="/img/corn.png" alt="corn" h="12" position="absolute" top="10" />}
+          </Center>
+        </Unit>
+        <Unit header="Farm Detail" description="This is your staking detail">
+          <Flex justify="right">
+            <Button
+              onClick={() => {
+                setHarvestModalStatus("selectAsset");
+                harvestModalDisclosure.onOpen();
+              }}
+              size="sm"
+              colorScheme={isStaked ? "brand" : "gray"}
+              disabled={!isStaked}
+            >
+              Harvest
+            </Button>
+            <Modal header="Harvest" isOpen={harvestModalDisclosure.isOpen} onClose={harvestModalDisclosure.onClose}>
+              {harvestModalStatus === "selectAsset" && (
+                <Stack spacing="4">
+                  <Button
+                    p="4"
+                    boxShadow={"md"}
+                    borderRadius="2xl"
+                    fontSize="sm"
+                    isLoading={isAccountTokenAmountLoading}
+                    loadingText={"Loading"}
+                    disabled={!isAccountTokenAmountEnough}
+                    onClick={() => setHarvestModalStatus("selectNetwork")}
+                  >
+                    aUSDC {!isAccountTokenAmountEnough && "( Not Enough )"}
+                  </Button>
+                </Stack>
+              )}
+              {harvestModalStatus === "selectNetwork" && (
+                <Stack spacing="8">
+                  <FormControl>
+                    <RadioGroup onChange={setSelectedChainIdWithTypeCheck} value={selectedChainId}>
+                      <Stack>
+                        <Radio value="5">Ethereum Georli</Radio>
+                        <Radio value="80001">Polygon Mumbai</Radio>
+                        <Radio value="97">BNB Testnet</Radio>
+                        <Radio value="4002">Fantom Testnet</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </FormControl>
+                  <HStack>
+                    <Button
+                      w="full"
+                      boxShadow={"md"}
+                      borderRadius="2xl"
+                      fontSize="sm"
                       disabled={!inputAmount}
-                      onClick={() => setPlantModalStatus("selectFarm")}
+                      onClick={() => setHarvestModalStatus("selectAsset")}
                     >
                       Back
                     </Button>
@@ -208,7 +289,63 @@ const HomePage: NextPage = () => {
                       borderRadius="2xl"
                       fontSize="sm"
                       disabled={!inputAmount}
-                      onClick={() => console.log("confirm")}
+                      onClick={() => setPlantModalStatus("preview")}
+                      colorScheme="brand"
+                    >
+                      Next
+                    </Button>
+                  </HStack>
+                </Stack>
+              )}
+              {harvestModalStatus === "preview" && (
+                <Stack spacing="8">
+                  <Stack spacing="2">
+                    <Stack spacing="1">
+                      <Text fontSize="sm" fontWeight={"medium"}>
+                        Amount
+                      </Text>
+                      <Text fontSize="sm">{inputAmount} aUSDC</Text>
+                    </Stack>
+                    <Stack spacing="1">
+                      <Text fontSize="sm" fontWeight={"medium"}>
+                        Bridge Protocol
+                      </Text>
+                      <Text fontSize="sm">Axelar</Text>
+                    </Stack>
+                    <Stack spacing="1">
+                      <Text fontSize="sm" fontWeight={"medium"}>
+                        Source Chain
+                      </Text>
+                      <Text fontSize="sm">{network[selectedChainId].name}</Text>
+                    </Stack>
+                    <Stack spacing="1">
+                      <Text fontSize="sm" fontWeight={"medium"}>
+                        Target Chain
+                      </Text>
+                      <Text fontSize="sm">{network[selectedChainId].name}</Text>
+                    </Stack>
+                  </Stack>
+                  <HStack>
+                    <Button
+                      w="full"
+                      boxShadow={"md"}
+                      borderRadius="2xl"
+                      fontSize="sm"
+                      disabled={!inputAmount}
+                      onClick={() => setPlantModalStatus("selectNetwork")}
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      w="full"
+                      boxShadow={"md"}
+                      borderRadius="2xl"
+                      fontSize="sm"
+                      disabled={!inputAmount}
+                      onClick={() => {
+                        setIsStaked(true);
+                        plantModalDisclosure.onClose();
+                      }}
                       colorScheme="brand"
                     >
                       Confirm
@@ -217,14 +354,7 @@ const HomePage: NextPage = () => {
                 </Stack>
               )}
             </Modal>
-          </Box>
-        </Flex>
-
-        <Unit header="Farm Overview" description="Your staking overview is visualized">
-          Farm Overview
-        </Unit>
-        <Unit header="Farm Detail" description="Your staking detail">
-          Farm Detail
+          </Flex>
         </Unit>
       </Stack>
     </DefaultLayout>

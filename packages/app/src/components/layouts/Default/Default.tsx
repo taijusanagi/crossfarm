@@ -1,4 +1,4 @@
-import { Box, Container, Flex, HStack, Icon, Link, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, HStack, Icon, Image, Link, Text } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React from "react";
 import { FaGithub } from "react-icons/fa";
@@ -14,9 +14,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         <Box as="nav" py="4">
           <Flex justify="space-between" alignItems={"center"} h="8">
             <Link href="/">
-              <Text fontSize="sm" fontWeight={"bold"}>
-                CrossFarm 🌽
-              </Text>
+              <Image src="/img/corn.png" alt="logo" h="8" />
             </Link>
             <HStack>
               <ConnectButton accountStatus={"address"} showBalance={false} chainStatus={"name"} />

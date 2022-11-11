@@ -7,7 +7,7 @@ export interface UnitProps extends BoxProps {
 
 export const Unit: React.FC<UnitProps> = ({ children, header, description }) => {
   return (
-    <Box mx="auto" p="6" boxShadow={"md"} borderRadius="2xl" bgColor={"white"}>
+    <Box mx="auto" w="full" p="6" boxShadow={"md"} borderRadius="2xl" bgColor={"white"}>
       <Stack spacing="4">
         <Stack spacing="1">
           <Text fontWeight={"bold"} fontSize="sm" color="gray.600">
