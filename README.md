@@ -20,15 +20,19 @@ https://docs.google.com/presentation/d/12TXKI9oDoNG4F57UUpacoMl2qi--gMnjNsK9GI1L
 
 https://youtu.be/nxcAjN2dANA
 
-## Live Demo
-
-https://crossfarm.vercel.app/
-
 ## How it is made
 
 ### Moralis API
 
 Used for fetching multichain wallet token balance
+
+- Backend
+
+  - https://github.com/taijusanagi/crossfarm/blob/main/packages/app/src/pages/api/token.ts#L17
+
+- Fronend
+
+  - https://github.com/taijusanagi/crossfarm/blob/main/packages/app/src/hooks/useAccountTokenAmount.tsx#L45
 
 ### Axeler
 
