@@ -1,14 +1,19 @@
 import { useMemo, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
+
+import { useChainId } from "@/hooks/useChainId";
 
 import { useAddresses } from "./useAddresses";
 
 export const useAccountTokenAmount = () => {
-  const { chain } = useNetwork();
+  const { chainId } = useChainId();
   const { address: userAddress } = useAccount();
   const addresses = useAddresses();
   const [isAccountTokenAmountLoading, setIsAccountTokenAmountLoading] = useState(false);
+  const [isAccountStakedAmountLoading, setIsAccountStakedAmountLoading] = useState(false);
+
   const [accountTokenAmount, setAccountTokenAmount] = useState<number>();
+  const [accountStakedAmount, setAccountStakedAmount] = useState<number>();
 
   const isAccountTokenAmountEnough = useMemo(() => {
     if (!accountTokenAmount) {
@@ -17,11 +22,18 @@ export const useAccountTokenAmount = () => {
     return accountTokenAmount > 0;
   }, [accountTokenAmount]);
 
-  const fetchAccountTokenAmount = () => {
+  const isAccountStakedAmountEnough = useMemo(() => {
+    if (!accountStakedAmount) {
+      return false;
+    }
+    return accountStakedAmount > 0;
+  }, [accountStakedAmount]);
+
+  const fetchAccountTokens = () => {
     if (!userAddress) {
       throw new Error("userAddress not defined");
     }
-    if (!chain) {
+    if (!chainId) {
       throw new Error("chain not defined");
     }
     if (!addresses) {
@@ -30,7 +42,7 @@ export const useAccountTokenAmount = () => {
     setIsAccountTokenAmountLoading(true);
     setAccountTokenAmount(undefined);
     fetch(
-      `${window.location.origin}/api/token?userAddress=${userAddress}&chainId=${chain.id}&tokenAddress=${addresses.aUSDC}`
+      `${window.location.origin}/api/token?userAddress=${userAddress}&chainId=${chainId}&tokenAddress=${addresses.aUSDC}`
     )
       .then((data) => {
         return data.json();
@@ -42,6 +54,28 @@ export const useAccountTokenAmount = () => {
         }
         setIsAccountTokenAmountLoading(false);
       });
+
+    fetch(
+      `${window.location.origin}/api/token?userAddress=${userAddress}&chainId=${chainId}&tokenAddress=${addresses.vault}`
+    )
+      .then((data) => {
+        return data.json();
+      })
+      .then((data) => {
+        const [token] = data;
+        if (token) {
+          setAccountStakedAmount(token.value);
+        }
+        setIsAccountStakedAmountLoading(false);
+      });
   };
-  return { accountTokenAmount, isAccountTokenAmountLoading, isAccountTokenAmountEnough, fetchAccountTokenAmount };
+  return {
+    accountTokenAmount,
+    accountStakedAmount,
+    isAccountTokenAmountLoading,
+    isAccountStakedAmountLoading,
+    isAccountTokenAmountEnough,
+    isAccountStakedAmountEnough,
+    fetchAccountTokens,
+  };
 };

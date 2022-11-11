@@ -11,8 +11,8 @@
       "aUSDC": "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
     },
     "deployments": {
-      "crossFarm": "0x322c896c20a90b240D9D9f02f448D4a7B5Cb9c25",
-      "vault": "0xB4376Fb4f77ddecFA5C66EF6384f97bd7a5f6B34"
+      "crossFarm": "0x8a20DF841946ce2192fd0AC298d20bCB5dd134C6",
+      "vault": "0xf1D9FccCddD2D440dD3a2ff9454aD6E73f008429"
     }
   },
   "97": {
@@ -27,8 +27,8 @@
       "aUSDC": "0xc2fA98faB811B785b81c64Ac875b31CC9E40F9D2"
     },
     "deployments": {
-      "crossFarm": "0xEEeB47597825661a2077c6280a705b90F8749078",
-      "vault": "0x23E8330bF482c894B2A257c8bB07D1d527ba5a8b"
+      "crossFarm": "0x484f3BEA36CfAb44B307d512Ccfe19e72289758A",
+      "vault": "0xec8845201c40Ec2C258b96CAD110aD01566247F6"
     }
   },
   "4002": {
@@ -43,8 +43,8 @@
       "aUSDC": "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
     },
     "deployments": {
-      "crossFarm": "0x5760527bFa552569d971c8c900A2ef877317E9b5",
-      "vault": "0x61767b10ab885c4a64E724f72Ad2711c6473D2F5"
+      "crossFarm": "0x760670a2fa7F7963760A5A890D6E66101D7aF3AC",
+      "vault": "0xa77b335d90252E61b402Ed77E790a369e7064C2b"
     }
   },
   "80001": {
@@ -59,8 +59,8 @@
       "aUSDC": "0x2c852e740B62308c46DD29B982FBb650D063Bd07"
     },
     "deployments": {
-      "crossFarm": "0x262037C2621F18F0A8475E4059B956bD09036bF3",
-      "vault": "0x60cD54C53b684D03020a5BDaA1a5D067f935538B"
+      "crossFarm": "0xA7F8874Ae45a20dc913BC9f6d5CAc6F86028B85A",
+      "vault": "0x8B3FA7f82512C12ad6FB4155F43FB3d9b8535b2c"
     }
   }
 }

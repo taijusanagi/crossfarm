@@ -23,13 +23,13 @@ export const Modal: React.FC<ModalProps> = ({ header, children, isOpen, onClose 
       <ModalContent m="2" borderRadius={"md"}>
         <ModalHeader>
           {header && (
-            <Text fontSize="sm" color={"gray.600"}>
+            <Text fontSize="lg" color={"gray.600"} fontWeight="bold">
               {header}
             </Text>
           )}
           <ModalCloseButton color={"gray.600"} />
         </ModalHeader>
-        <ModalBody px="6" pt="2" pb="8">
+        <ModalBody px="6" pb="8">
           {children}
         </ModalBody>
       </ModalContent>

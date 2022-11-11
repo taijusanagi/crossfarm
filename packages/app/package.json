@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@account-abstraction/contracts": "^0.2.0",
+    "@axelar-network/axelarjs-sdk": "^0.11.7",
     "@chakra-ui/pro-theme": "^0.0.57",
     "@chakra-ui/react": "^2.3.6",
     "@emotion/react": "^11",
@@ -21,9 +22,12 @@
     "moralis": "^2.7.1",
     "next": "13.0.1",
     "react": "18.2.0",
+    "react-confetti": "^6.1.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.6.0",
     "react-qr-scanner": "^1.0.0-alpha.11",
+    "react-rewards": "^2.0.4",
+    "react-use": "^17.4.0",
     "wagmi": "^0.7.9"
   },
   "devDependencies": {

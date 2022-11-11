@@ -43,11 +43,13 @@ contract CrossFarm is AxelarExecutable {
     IERC20(tokenAddress).approve(address(gateway), tokenAmount);
     bytes memory payload = abi.encode(processType, additinalData);
     if (msg.value > 0) {
-      gasReceiver.payNativeGasForContractCall{value: msg.value}(
+      gasReceiver.payNativeGasForContractCallWithToken{value: msg.value}(
         address(this),
         destinationChain,
         destinationAddress,
         payload,
+        tokenSymbol,
+        tokenAmount,
         msg.sender
       );
     }

@@ -1,12 +1,14 @@
 import Moralis from "moralis";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { isChainId } from "../../../../contracts/types/ChainId";
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { userAddress, chainId, tokenAddress } = req.query;
   if (typeof userAddress !== "string") {
     throw new Error("userAddress invalid");
   }
-  if (typeof chainId !== "string") {
+  if (typeof chainId !== "string" || !isChainId(chainId)) {
     throw new Error("chainId invalid");
   }
   if (typeof tokenAddress !== "string") {
