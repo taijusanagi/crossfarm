@@ -1,5 +1,7 @@
 # CrossFarm
 
+![key](./packages/app/public/img/top.png)
+
 ## Description
 
 CrossFarm is an auto cross-chain yield aggregator with Axeler with a bit of gamification.
@@ -14,11 +16,23 @@ https://youtu.be/nxcAjN2dANA
 
 ## Live Demo
 
+https://crossfarm.vercel.app/
+
 ## How it is made
 
-Cross-chain functionally is built with messaging protocol [Multichain](https://multichain.xyz).
+### Moralis API
+
+Used for fetching multichain wallet token balance
+
+### Axeler
+
+Used for cross-chain messaging
 
 ## Deployed Contract
+
+See the following file deployments sections, contract is deployed Polygon, BSC, Fantom testnet.
+
+https://github.com/taijusanagi/crossfarm/blob/main/packages/contracts/network.json
 
 ## Tested Transaction
 
@@ -51,16 +65,6 @@ https://testnet.axelarscan.io/gmp/0x69cbc10d0ab63d916610354d970793e65e33e6491ab7
 #### Automated Staking
 
 https://mumbai.polygonscan.com/tx/0xe6a463a95bbaa5caca178db596ef3226fc730e2ac57aff5cc32afb62f934f5dd
-
-## Integration
-
-### Moralis API
-
-Used for fetching wallet token balance multichain
-
-### Axeler
-
-Used for cross-chain messaging
 
 ## Development
 
