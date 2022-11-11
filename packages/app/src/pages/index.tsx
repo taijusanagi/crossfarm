@@ -65,7 +65,6 @@ const HomePage: NextPage = () => {
   const [inputPlantAmount, setInputPlantAmount] = useState("0.1");
   const [inputHarvestAmount, setInputHarvestAmount] = useState("0.1");
   const [selectedChainId, setSelectedChainId] = useState<ChainId>("97");
-  const [isStaked, setIsStaked] = useState(true);
 
   const [txHash, setTxHash] = useState("");
 
@@ -125,6 +124,53 @@ const HomePage: NextPage = () => {
     }
   };
 
+  const harvest = async () => {
+    if (!chainId || !contracts || !addresses || !userAddress) {
+      return;
+    }
+    try {
+      setIsTxSending(true);
+      const parsedInputAmount = ethers.utils.parseUnits(inputPlantAmount, 6);
+      console.log("plant with cross-chain bridge");
+      const allowance = await contracts.vault.allowance(userAddress, contracts.crossFarm.address);
+      console.log("allowance", allowance);
+      if (allowance.lt(parsedInputAmount)) {
+        console.log("allowance is not enough, please approve");
+        const approveTx = await contracts.vault.approve(contracts.crossFarm.address, parsedInputAmount);
+        console.log("approve tx sent", approveTx.hash);
+        await approveTx.wait();
+        console.log("approve tx confirmed");
+      }
+      console.log("bridge fee estimation...");
+      const estimatedFasFeeForBridge = await axelar.query.estimateGasFee(
+        getAxelarNetwork(chainId),
+        getAxelarNetwork(selectedChainId),
+        getAxelarToken(chainId),
+        1000000
+      );
+      console.log("bridge fee estimated", estimatedFasFeeForBridge);
+      const process = await contracts.crossFarm.process(
+        "1",
+        getAxelarNetwork(selectedChainId),
+        networkJsonFile[selectedChainId].deployments.crossFarm,
+        asset,
+        parsedInputAmount,
+        networkJsonFile[selectedChainId].deployments.vault,
+        { value: estimatedFasFeeForBridge }
+      );
+      console.log("process tx sent", process.hash);
+      await process.wait();
+      setTxHash(process.hash);
+      setPlantModalStatus("result");
+      confettiDisclosure.onOpen();
+      console.log("process tx confirmed");
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsTxSending(false);
+    }
+  };
+
   return (
     <DefaultLayout>
       {confettiDisclosure.isOpen && <Confetti width={width} height={height} />}
@@ -159,7 +205,7 @@ const HomePage: NextPage = () => {
           <Box py="24">
             <Center h="200" position="relative">
               <Image src="/img/base.png" alt="base" h="200" position="absolute" top="0" />
-              {isStaked && <Image src="/img/corn.png" alt="corn" h="12" position="absolute" top="10" />}
+              <Image src="/img/corn.png" alt="corn" h="12" position="absolute" top="10" />
             </Center>
           </Box>
         </Stack>
@@ -329,11 +375,41 @@ const HomePage: NextPage = () => {
               isLoading={isAccountTokenAmountLoading}
               loadingText={"Loading"}
               disabled={!isAccountStakedAmountEnough}
-              onClick={() => setHarvestModalStatus("selectNetwork")}
+              onClick={() => setHarvestModalStatus("inputAmount")}
               fontWeight={"bold"}
             >
               {asset} {!isAccountStakedAmountEnough ? "( Not Enough )" : `( ${accountStakedAmount} )`}
             </Button>
+          </Stack>
+        )}
+        {harvestModalStatus === "inputAmount" && (
+          <Stack spacing="4">
+            <FormControl>
+              <Flex justify={"space-between"}>
+                <FormLabel fontSize="md">Amount</FormLabel>
+                <FormLabel fontSize="md">Max: {accountStakedAmount}</FormLabel>
+              </Flex>
+              <Input
+                type="number"
+                placeholder={"aUSDC"}
+                value={inputHarvestAmount}
+                onChange={(e) => setInputHarvestAmount(e.target.value)}
+              />
+            </FormControl>
+            <HStack>
+              <Button fontWeight={"bold"} w="full" onClick={() => setHarvestModalStatus("selectAsset")}>
+                Back
+              </Button>
+              <Button
+                fontWeight={"bold"}
+                w="full"
+                disabled={!inputHarvestAmount}
+                onClick={() => setHarvestModalStatus("selectNetwork")}
+                colorScheme="brand"
+              >
+                Next
+              </Button>
+            </HStack>
           </Stack>
         )}
         {harvestModalStatus === "selectNetwork" && (
@@ -366,7 +442,7 @@ const HomePage: NextPage = () => {
                 fontWeight={"bold"}
                 w="full"
                 disabled={!inputHarvestAmount}
-                onClick={() => setPlantModalStatus("preview")}
+                onClick={() => setHarvestModalStatus("preview")}
                 colorScheme="brand"
               >
                 Next
@@ -391,38 +467,33 @@ const HomePage: NextPage = () => {
                 </Text>
                 <Text fontSize="md">Axelar</Text>
               </Stack>
-              <Stack spacing="1">
-                <Text fontSize="md" fontWeight={"bold"}>
-                  Source Chain
-                </Text>
-                <Text fontSize="md">{networkJsonFile[selectedChainId].name}</Text>
-              </Stack>
-              <Stack spacing="1">
-                <Text fontSize="md" fontWeight={"bold"}>
-                  Target Chain
-                </Text>
-                <Text fontSize="md">{networkJsonFile[selectedChainId].name}</Text>
-              </Stack>
+              {chainId !== selectedChainId && (
+                <>
+                  <Stack spacing="1">
+                    <Text fontSize="md" fontWeight={"bold"}>
+                      Source Chain
+                    </Text>
+                    <Text fontSize="md">{networkJsonFile[chainId].name}</Text>
+                  </Stack>
+                  <Stack spacing="1">
+                    <Text fontSize="md" fontWeight={"bold"}>
+                      Target Chain
+                    </Text>
+                    <Text fontSize="md">{networkJsonFile[selectedChainId].name}</Text>
+                  </Stack>
+                </>
+              )}
             </Stack>
             <HStack>
               <Button
                 fontWeight={"bold"}
                 w="full"
                 disabled={!inputHarvestAmount}
-                onClick={() => setPlantModalStatus("selectNetwork")}
+                onClick={() => setHarvestModalStatus("inputAmount")}
               >
                 Back
               </Button>
-              <Button
-                fontWeight={"bold"}
-                w="full"
-                disabled={!inputHarvestAmount}
-                onClick={() => {
-                  setIsStaked(true);
-                  plantModalDisclosure.onClose();
-                }}
-                colorScheme="brand"
-              >
+              <Button fontWeight={"bold"} w="full" disabled={!inputHarvestAmount} onClick={harvest} colorScheme="brand">
                 Confirm
               </Button>
             </HStack>
