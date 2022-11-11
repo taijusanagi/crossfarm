@@ -7,7 +7,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {AxelarExecutable} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/executables/AxelarExecutable.sol";
 import {IAxelarGasService} from "@axelar-network/axelar-gmp-sdk-solidity/contracts/interfaces/IAxelarGasService.sol";
 
-import {MockVault} from "./MockVault.sol";
+import {IBeefyVault} from "./interfaces/IBeefyVault.sol";
 
 contract CrossFarm is AxelarExecutable {
   IAxelarGasService public immutable gasReceiver;
@@ -29,19 +29,19 @@ contract CrossFarm is AxelarExecutable {
     uint256 tokenAmount,
     address vaultAddress
   ) external payable {
+    address tokenAddress = gateway.tokenAddresses(tokenSymbol);
     bytes memory additinalData;
     if (processType == ProcessType.Plant) {
-      additinalData = abi.encode(msg.sender, vaultAddress);
-      address tokenAddress = gateway.tokenAddresses(tokenSymbol);
       IERC20(tokenAddress).transferFrom(msg.sender, address(this), tokenAmount);
+      additinalData = abi.encode(msg.sender, vaultAddress);
     } else {
-      additinalData = abi.encode(msg.sender);
+      require(IBeefyVault(vaultAddress).token() == tokenAddress, "CrossFarm: invalid token vault address");
       IERC20(vaultAddress).transferFrom(msg.sender, address(this), tokenAmount);
-      MockVault(vaultAddress).withdraw(tokenAmount);
+      IBeefyVault(vaultAddress).withdraw(tokenAmount);
+      additinalData = abi.encode(msg.sender);
     }
-
+    IERC20(tokenAddress).approve(address(gateway), tokenAmount);
     bytes memory payload = abi.encode(processType, additinalData);
-
     if (msg.value > 0) {
       gasReceiver.payNativeGasForContractCall{value: msg.value}(
         address(this),
@@ -51,7 +51,6 @@ contract CrossFarm is AxelarExecutable {
         msg.sender
       );
     }
-
     gateway.callContractWithToken(destinationChain, destinationAddress, payload, tokenSymbol, tokenAmount);
   }
 
@@ -66,7 +65,7 @@ contract CrossFarm is AxelarExecutable {
     (ProcessType processType, bytes memory additinalData) = abi.decode(payload, (ProcessType, bytes));
     if (processType == ProcessType.Plant) {
       (address recipientAddress, address vaultAddress) = abi.decode(additinalData, (address, address));
-      MockVault(vaultAddress).deposit(tokenAmount);
+      IBeefyVault(vaultAddress).deposit(tokenAmount);
       IERC20(vaultAddress).transferFrom(address(this), recipientAddress, tokenAmount);
     } else {
       address recipientAddress = abi.decode(additinalData, (address));

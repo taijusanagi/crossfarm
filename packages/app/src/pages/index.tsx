@@ -17,6 +17,7 @@ import {
 import { ethers } from "ethers";
 import { NextPage } from "next";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
 import { DefaultLayout } from "@/components/layouts/Default";
 import { Modal } from "@/components/Modal";
@@ -33,6 +34,7 @@ import { ChainId, isChainId } from "../../../contracts/types/ChainId";
 const HomePage: NextPage = () => {
   const { chainId } = useChainId();
   const contracts = useContracts();
+  const { address: userAddress } = useAccount();
 
   const { isWagmiConnected } = useIsWagmiConnected();
   const { isAccountTokenAmountLoading, isAccountTokenAmountEnough, accountTokenAmount, fetchAccountTokenAmount } =
@@ -48,8 +50,8 @@ const HomePage: NextPage = () => {
     "selectAsset" | "inputAmount" | "selectNetwork" | "preview"
   >("selectAsset");
   const [asset] = useState("aUSDC");
-  const [inputPlantAmount, setInputPlantAmount] = useState("1");
-  const [inputHarvestAmount, setInputHarvestAmount] = useState("1");
+  const [inputPlantAmount, setInputPlantAmount] = useState("0.1");
+  const [inputHarvestAmount, setInputHarvestAmount] = useState("0.1");
   const [selectedChainId, setSelectedChainId] = useState<ChainId>("5");
   const [isStaked, setIsStaked] = useState(false);
 
@@ -61,27 +63,49 @@ const HomePage: NextPage = () => {
   };
 
   const plant = async () => {
-    if (!contracts || !addresses) {
+    if (!contracts || !userAddress) {
       return;
     }
-    if (chainId === selectedChainId) {
-      // chech approve
-      await contracts.vault.deposit(inputPlantAmount);
-    } else {
-      // string memory destinationChain,
-      // string memory destinationAddress,
-      // string memory tokenSymbol,
-      // uint256 tokenAmount,
-      // address vaultAddress
-      const amount = ethers.utils.parseUnits(inputPlantAmount, 6);
-
-      await contracts.crossFarm.xPlant(
-        selectedChainId,
-        networkJsonFile[selectedChainId].deployments.crossFarm,
-        asset,
-        amount,
-        networkJsonFile[selectedChainId].deployments.vault
-      );
+    try {
+      const parsedInputAmount = ethers.utils.parseUnits(inputPlantAmount, 6);
+      if (chainId === selectedChainId) {
+        console.log("plant without crosschain bridge");
+        const allowance = await contracts.token.allowance(userAddress, contracts.vault.address);
+        console.log("allowance", allowance);
+        if (allowance.lt(parsedInputAmount)) {
+          console.log("allowance is not enough, please approve");
+          const approveTx = await contracts.token.approve(contracts.vault.address, parsedInputAmount);
+          console.log("approve tx sent", approveTx.hash);
+          await approveTx.wait();
+          console.log("approve tx confirmed");
+        }
+        console.log("please stake");
+        const stakeTx = await contracts.vault.deposit(parsedInputAmount);
+        console.log("stake tx sent", stakeTx.hash);
+        await stakeTx.wait();
+        console.log("stake tx confirmed");
+      } else {
+        console.log("plant with crosschain bridge");
+        const allowance = await contracts.token.allowance(userAddress, contracts.crossFarm.address);
+        console.log("allowance", allowance);
+        if (allowance.lt(parsedInputAmount)) {
+          console.log("allowance is not enough, please approve");
+          const approveTx = await contracts.token.approve(contracts.crossFarm.address, parsedInputAmount);
+          console.log("approve tx sent", approveTx.hash);
+          await approveTx.wait();
+          console.log("approve tx confirmed");
+        }
+        await contracts.crossFarm.process(
+          "0",
+          networkJsonFile[selectedChainId].key,
+          networkJsonFile[selectedChainId].deployments.crossFarm,
+          asset,
+          parsedInputAmount,
+          networkJsonFile[selectedChainId].deployments.vault
+        );
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -132,7 +156,7 @@ const HomePage: NextPage = () => {
               disabled={!isAccountTokenAmountEnough}
               onClick={() => setPlantModalStatus("inputAmount")}
             >
-              {asset} {!isAccountTokenAmountEnough && "( Not Enough )"}
+              {asset} {!isAccountTokenAmountEnough ? "( Not Enough )" : `( ${accountTokenAmount} )`} {}
             </Button>
           </Stack>
         )}
@@ -207,22 +231,26 @@ const HomePage: NextPage = () => {
               </Stack>
               <Stack spacing="1">
                 <Text fontSize="sm" fontWeight={"bold"}>
-                  Bridge Protocol
-                </Text>
-                <Text fontSize="sm">Axelar</Text>
-              </Stack>
-              <Stack spacing="1">
-                <Text fontSize="sm" fontWeight={"bold"}>
                   Source Chain
                 </Text>
-                <Text fontSize="sm">Georli</Text>
+                <Text fontSize="sm">{chainId && networkJsonFile[chainId].name}</Text>
               </Stack>
-              <Stack spacing="1">
-                <Text fontSize="sm" fontWeight={"bold"}>
-                  Target Chain
-                </Text>
-                <Text fontSize="sm">{networkJsonFile[selectedChainId].name}</Text>
-              </Stack>
+              {chainId !== selectedChainId && (
+                <>
+                  <Stack spacing="1">
+                    <Text fontSize="sm" fontWeight={"bold"}>
+                      Target Chain
+                    </Text>
+                    <Text fontSize="sm">{networkJsonFile[selectedChainId].name}</Text>
+                  </Stack>
+                  <Stack spacing="1">
+                    <Text fontSize="sm" fontWeight={"bold"}>
+                      Bridge Protocol
+                    </Text>
+                    <Text fontSize="sm">Axelar</Text>
+                  </Stack>
+                </>
+              )}
               <Stack spacing="1">
                 <Text fontSize="sm" fontWeight={"bold"}>
                   Expected APY
@@ -237,8 +265,8 @@ const HomePage: NextPage = () => {
               <Button
                 fontWeight={"bold"}
                 w="full"
-                onClick={() => {
-                  setIsStaked(true);
+                onClick={async () => {
+                  await plant();
                   plantModalDisclosure.onClose();
                 }}
                 colorScheme="brand"

@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { useSigner } from "wagmi";
 
-import { CrossFarm__factory, MockVault__factory } from "../../../contracts/typechain-types";
+import { CrossFarm__factory, ERC20__factory, MockVault__factory } from "../../../contracts/typechain-types";
 import { useAddresses } from "./useAddresses";
 
 export const useContracts = () => {
@@ -14,7 +14,9 @@ export const useContracts = () => {
     }
     const crossFarm = CrossFarm__factory.connect(addresses.crossFarm, signer);
     const vault = MockVault__factory.connect(addresses.vault, signer);
-    return { crossFarm, vault };
+    const token = ERC20__factory.connect(addresses.aUSDC, signer);
+
+    return { crossFarm, vault, token };
   }, [addresses, signer]);
   return contracts;
 };

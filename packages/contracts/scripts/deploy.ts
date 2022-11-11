@@ -12,16 +12,18 @@ async function main() {
     throw new Error("chainId invalid");
   }
   const CrossFarm = await ethers.getContractFactory("CrossFarm");
-  const { address: crossFarmAddress } = await CrossFarm.deploy(
+  const crossFarm = await CrossFarm.deploy(
     networkJsonFile[chainId].axelar.gateway,
     networkJsonFile[chainId].axelar.gasService
   );
-  console.log("crossFarmAddress", crossFarmAddress);
-  networkJsonFile[chainId].deployments.crossFarm = crossFarmAddress;
-  const Vault = await ethers.getContractFactory("MockVault");
-  const { address: vaultAddress } = await Vault.deploy(networkJsonFile[chainId].axelar.aUSDC);
-  console.log("vaultAddress", vaultAddress);
-  networkJsonFile[chainId].deployments.vault = vaultAddress;
+  await crossFarm.deployed();
+  console.log("crossFarmAddress", crossFarm.address);
+  networkJsonFile[chainId].deployments.crossFarm = crossFarm.address;
+  const Vault = await ethers.getContractFactory("BeefyVault");
+  const vault = await Vault.deploy(networkJsonFile[chainId].axelar.aUSDC);
+  await vault.deployed();
+  console.log("vaultAddress", vault.address);
+  networkJsonFile[chainId].deployments.vault = vault.address;
   fs.writeFileSync(path.join(__dirname, `../network.json`), JSON.stringify(networkJsonFile));
 }
 

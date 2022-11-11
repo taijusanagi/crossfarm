@@ -36,9 +36,12 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      chainId: 1337,
+      chainId: 5,
       accounts: {
         mnemonic,
+      },
+      forking: {
+        url: networkJsonFile["5"].rpc,
       },
     },
     ethereum: {
