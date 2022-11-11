@@ -2,7 +2,7 @@ import { AxelarGMPRecoveryAPI, AxelarQueryAPI, Environment, EvmChain, GasToken }
 
 import { ChainId } from "../../../../contracts/types/ChainId";
 
-export const axeler = {
+export const axelar = {
   query: new AxelarQueryAPI({
     environment: Environment.TESTNET,
   }),
@@ -11,7 +11,7 @@ export const axeler = {
   }),
 };
 
-export const getAxelerNetwork = (chainId: ChainId) => {
+export const getAxelarNetwork = (chainId: ChainId) => {
   return chainId === "5"
     ? EvmChain.ETHEREUM
     : chainId === "97"
@@ -21,7 +21,7 @@ export const getAxelerNetwork = (chainId: ChainId) => {
     : EvmChain.POLYGON;
 };
 
-export const getAxelerToken = (chainId: ChainId) => {
+export const getAxelarToken = (chainId: ChainId) => {
   return chainId === "5"
     ? GasToken.ETH
     : chainId === "97"

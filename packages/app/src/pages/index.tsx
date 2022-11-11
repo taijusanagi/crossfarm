@@ -31,7 +31,7 @@ import { useAPY } from "@/hooks/useAPY";
 import { useChainId } from "@/hooks/useChainId";
 import { useContracts } from "@/hooks/useContracts";
 import { useIsWagmiConnected } from "@/hooks/useIsWagmiConnected";
-import { axeler, getAxelerNetwork, getAxelerToken } from "@/lib/axeler";
+import { axelar, getAxelarNetwork, getAxelarToken } from "@/lib/axelar";
 
 import networkJsonFile from "../../../contracts/network.json";
 import { ChainId, isChainId } from "../../../contracts/types/ChainId";
@@ -96,16 +96,16 @@ const HomePage: NextPage = () => {
         console.log("approve tx confirmed");
       }
       console.log("bridge fee estimation...");
-      const estimatedFasFeeForBridge = await axeler.query.estimateGasFee(
-        getAxelerNetwork(chainId),
-        getAxelerNetwork(selectedChainId),
-        getAxelerToken(chainId),
+      const estimatedFasFeeForBridge = await axelar.query.estimateGasFee(
+        getAxelarNetwork(chainId),
+        getAxelarNetwork(selectedChainId),
+        getAxelarToken(chainId),
         1000000
       );
       console.log("bridge fee estimated", estimatedFasFeeForBridge);
       const process = await contracts.crossFarm.process(
         "0",
-        getAxelerNetwork(selectedChainId),
+        getAxelarNetwork(selectedChainId),
         networkJsonFile[selectedChainId].deployments.crossFarm,
         asset,
         parsedInputAmount,
@@ -128,7 +128,7 @@ const HomePage: NextPage = () => {
   return (
     <DefaultLayout>
       {confettiDisclosure.isOpen && <Confetti width={width} height={height} />}
-      <Unit header="CrossFarm" description="Auto cross-chain yield aggregator with Axeler">
+      <Unit header="CrossFarm" description="Auto cross-chain yield aggregator with Axelar">
         <Stack>
           <Flex justify="space-between">
             <Button
@@ -303,7 +303,7 @@ const HomePage: NextPage = () => {
               <Text fontSize="lg" fontWeight={"bold"}>
                 Congratulation!
               </Text>
-              <Text fontSize="md">You sent a cross-chain staking tx with Axeler</Text>
+              <Text fontSize="md">You sent a cross-chain staking tx with Axelar</Text>
             </Stack>
             <HStack>
               <Button

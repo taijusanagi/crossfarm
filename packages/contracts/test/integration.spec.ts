@@ -2,7 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 
-import { assetSymbol } from "../lib/axeler";
+import { assetSymbol } from "../lib/axelar";
 import networkJsonFile from "../network.json";
 import { ChainId, isChainId } from "../types/ChainId";
 

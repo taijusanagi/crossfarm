@@ -3,10 +3,10 @@ import { useMemo } from "react";
 
 import { useChainId } from "./useChainId";
 
-export const useAxelerNetwork = () => {
+export const useAxelarNetwork = () => {
   const { chainId } = useChainId();
 
-  const axelerNetwork = useMemo(() => {
+  const axelarNetwork = useMemo(() => {
     return chainId === "5"
       ? EvmChain.ETHEREUM
       : chainId === "97"
@@ -18,5 +18,5 @@ export const useAxelerNetwork = () => {
       : undefined;
   }, [chainId]);
 
-  return { axelerNetwork };
+  return { axelarNetwork };
 };

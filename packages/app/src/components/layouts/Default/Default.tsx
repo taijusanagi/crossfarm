@@ -36,7 +36,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={"CrossFarm"} />
         <meta property="og:site_name" content={"CrossFarm"} />
-        <meta property="og:description" content={"Automated cross-chain yield aggregator with Axeler"} />
+        <meta property="og:description" content={"Automated cross-chain yield aggregator with Axelar"} />
         <meta property="og:image" content={`https://crossfarm.vercel.app/img/key.png`} />
         <meta name="twitter:card" content={"summary_large_image"} />
       </NextHead>
@@ -55,7 +55,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
                     <Image src="/img/corn.png" alt="logo" h="12" />
                   </HStack>
                   <Text color="white" fontSize="xl" textAlign="center">
-                    Auto crosschain yield aggregator with Axeler
+                    Auto crosschain yield aggregator with Axelar
                   </Text>
                 </Stack>
                 <Button onClick={() => setMode("app")} colorScheme={"green"} fontWeight="bold">
