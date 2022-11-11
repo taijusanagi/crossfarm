@@ -5,12 +5,15 @@
 ## Description
 
 CrossFarm is an automated cross-chain yield aggregator with Axelar.
-
-In the current ecosystem, Users have to wait so long to get their token bridged to the destination chain to start staking in the new chain. CrossFarm combines those bridge Tx with staking Tx into one.
-
-This is like an aggregator of multichain yield aggregators.
-
 And some gamification for fun!!
+
+### Problem
+
+In the current ecosystem, Users have to wait so long to get their token bridged to the new chain for staking.
+
+### Solution
+
+CrossFarm combines those bridge Tx with staking Tx into one.
 
 ## Pitch Deck
 
