@@ -1,17 +1,23 @@
-import { ethers } from "ethers";
 import Moralis from "moralis";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { address } = req.query;
-  await Moralis.start({ apiKey: process.env.MORALIS_API_KEY });
-  if (typeof address !== "string" || !ethers.utils.isAddress(address)) {
-    return res.status(400).json({ error: "query user address is invalid" });
+  const { userAddress, chainId, tokenAddress } = req.query;
+  if (typeof userAddress !== "string") {
+    throw new Error("userAddress invalid");
   }
-  const { data } = await Moralis.EvmApi.token.getWalletTokenBalances({
-    address,
-    chain: "5",
-    tokenAddresses: ["0x254d06f33bdc5b8ee05b2ea472107e300226659a"],
+  if (typeof chainId !== "string") {
+    throw new Error("chainId invalid");
+  }
+  if (typeof tokenAddress !== "string") {
+    throw new Error("tokenAddress invalid");
+  }
+  await Moralis.start({ apiKey: process.env.MORALIS_API_KEY });
+  const response = await Moralis.EvmApi.token.getWalletTokenBalances({
+    address: userAddress,
+    chain: chainId,
+    tokenAddresses: [tokenAddress],
   });
+  const data = response.toJSON();
   res.status(200).json(data);
 }

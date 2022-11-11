@@ -14,7 +14,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
         <Box as="nav" py="4">
           <Flex justify="space-between" alignItems={"center"} h="8">
             <Link href="/">
-              <Text fontSize="md" fontWeight={"bold"}>
+              <Text fontSize="sm" fontWeight={"bold"}>
                 CrossFarm 🌽
               </Text>
             </Link>
@@ -24,7 +24,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
           </Flex>
         </Box>
       </Container>
-      <Container maxW="6xl" py="4" flex={1}>
+      <Container maxW="xl" py="4" flex={1}>
         {children}
       </Container>
       <Container maxW="8xl">

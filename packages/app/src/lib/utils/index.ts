@@ -9,3 +9,9 @@ export const truncate = (str: string | undefined, pre: number, post?: number) =>
   }
   return `${str.substring(0, pre)}...${post ? str.substring(str.length - post) : ""}`;
 };
+
+export const getRandomNumber = (min: number, max: number) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+};

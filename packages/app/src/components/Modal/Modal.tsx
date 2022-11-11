@@ -20,7 +20,7 @@ export const Modal: React.FC<ModalProps> = ({ header, children, isOpen, onClose 
   return (
     <_Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent m="2">
+      <ModalContent m="2" borderRadius={"2xl"}>
         <ModalHeader>
           {header && (
             <Text fontSize="sm" color={"gray.600"}>
